@@ -11,10 +11,13 @@ function cpfCheck(base, factor) {
   return rest === 10 ? 0 : rest;
 }
 export function generateCPF(formatted = true) {
-  const base = rngDigits(9);
-  const d1 = cpfCheck(base, 10);
-  const d2 = cpfCheck(base + d1, 11);
-  const cpf = base + d1 + d2;
+  let cpf;
+  do {
+    const base = rngDigits(9);
+    const d1 = cpfCheck(base, 10);
+    const d2 = cpfCheck(base + d1, 11);
+    cpf = base + d1 + d2;
+  } while (!isValidCPF(cpf)); // re-rola bases repetidas (ex.: 000000000 → 00000000000)
   return formatted ? cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : cpf;
 }
 export function isValidCPF(value) {
@@ -33,10 +36,13 @@ function cnpjCheck(base, w) {
   return rest < 2 ? 0 : 11 - rest;
 }
 export function generateCNPJ(formatted = true) {
-  const base = rngDigits(8) + '0001';
-  const d1 = cnpjCheck(base, F);
-  const d2 = cnpjCheck(base + d1, S);
-  const cnpj = base + d1 + d2;
+  let cnpj;
+  do {
+    const base = rngDigits(8) + '0001';
+    const d1 = cnpjCheck(base, F);
+    const d2 = cnpjCheck(base + d1, S);
+    cnpj = base + d1 + d2;
+  } while (!isValidCNPJ(cnpj)); // re-rola bases repetidas
   return formatted ? cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : cnpj;
 }
 export function isValidCNPJ(value) {
@@ -58,6 +64,11 @@ export function generatePIS(formatted = true) {
   const pis = base + pisCheck(base);
   return formatted ? pis.replace(/(\d{3})(\d{5})(\d{2})(\d{1})/, '$1.$2.$3-$4') : pis;
 }
+export function isValidPIS(value) {
+  const d = onlyDigits(value);
+  if (d.length !== 11 || /^(\d)\1+$/.test(d)) return false;
+  return pisCheck(d.slice(0, 10)) === +d[10];
+}
 
 // ---------- CEP / Telefone ----------
 const DDDs = [11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 24, 27, 31, 41, 47, 51, 61, 71, 81, 85, 91];
@@ -65,11 +76,18 @@ export function generateCEP(formatted = true) {
   const cep = rngDigits(8);
   return formatted ? cep.replace(/(\d{5})(\d{3})/, '$1-$2') : cep;
 }
+export function isValidCEP(value) {
+  return /^\d{8}$/.test(onlyDigits(value));
+}
 export function generatePhone(formatted = true) {
   const ddd = DDDs[Math.floor(Math.random() * DDDs.length)];
   const num = '9' + rngDigits(8);
   const full = `${ddd}${num}`;
   return formatted ? full.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3') : full;
+}
+// Telefone brasileiro: DDD (2) + número fixo (8) ou celular (9). Validação de formato.
+export function isValidPhone(value) {
+  return /^\d{10,11}$/.test(onlyDigits(value));
 }
 
 // ---------- Pessoa fake ----------

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import {
   generateCPF, generateCNPJ, generatePIS, generateCEP, generatePhone, generatePerson,
-  isValidCPF, isValidCNPJ,
+  isValidCPF, isValidCNPJ, isValidPIS, isValidCEP, isValidPhone,
 } from '../src/generators.js';
 
 const C = {
@@ -25,19 +25,26 @@ ${c('bold', 'COMANDOS')}
   cep            Gera CEP(s)
   phone          Gera telefone(s) celular
   person         Gera uma pessoa fake completa
-  validate <doc> Valida um CPF ou CNPJ (detecta pelo tamanho)
+  validate <doc> Valida um documento (detecta o tipo; ou use --type)
 
 ${c('bold', 'OPÇÕES')}
   -n, --count <N>   Quantidade a gerar (padrão: 1)
+  --type <tipo>     Força o tipo no validate: cpf|cnpj|pis|cep|phone
   --raw             Sem máscara (só dígitos)
   --json            Saída em JSON
   -h, --help        Mostra esta ajuda
   -v, --version     Mostra a versão
 
+${c('bold', 'VALIDATE — detecção automática')}
+  14 dígitos → CNPJ   ·   11 dígitos → CPF ou PIS (testa ambos)
+  10 dígitos → telefone   ·   8 dígitos → CEP
+  Ambíguo? Use --type (ex.: um celular de 11 dígitos: --type phone).
+
 ${c('bold', 'EXEMPLOS')}
   ${c('dim', '$')} br-gen cpf -n 3
   ${c('dim', '$')} br-gen person --json
   ${c('dim', '$')} br-gen validate 529.982.247-25
+  ${c('dim', '$')} br-gen validate 123.45678.90-0 --type pis
 `;
 
 function parseArgs(argv) {
@@ -45,6 +52,7 @@ function parseArgs(argv) {
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '-n' || a === '--count') args.count = Math.max(1, Math.min(1000, +argv[++i] || 1));
+    else if (a === '--type') args.type = (argv[++i] || '').toLowerCase();
     else if (a === '--raw') args.raw = true;
     else if (a === '--json') args.json = true;
     else if (a === '-h' || a === '--help') args.help = true;
@@ -73,8 +81,33 @@ function main() {
     const doc = args._[1];
     if (!doc) { console.error(c('red', 'Informe um documento: br-gen validate <doc>')); process.exit(1); }
     const digits = doc.replace(/\D/g, '');
-    const valid = digits.length === 14 ? isValidCNPJ(doc) : isValidCPF(doc);
-    const tipo = digits.length === 14 ? 'CNPJ' : 'CPF';
+    const validators = { cpf: isValidCPF, cnpj: isValidCNPJ, pis: isValidPIS, cep: isValidCEP, phone: isValidPhone };
+    const labels = { cpf: 'CPF', cnpj: 'CNPJ', pis: 'PIS', cep: 'CEP', phone: 'Telefone' };
+
+    let tipo, valid;
+    if (args.type) {
+      if (!validators[args.type]) {
+        console.error(c('red', `Tipo desconhecido: ${args.type}. Use um de: cpf, cnpj, pis, cep, phone.`));
+        process.exit(1);
+      }
+      tipo = labels[args.type];
+      valid = validators[args.type](doc);
+    } else if (digits.length === 14) {
+      tipo = labels.cnpj; valid = isValidCNPJ(doc);
+    } else if (digits.length === 11) {
+      // CPF e PIS têm 11 dígitos: testa os dois e reporta qual casa.
+      if (isValidCPF(doc)) { tipo = labels.cpf; valid = true; }
+      else if (isValidPIS(doc)) { tipo = labels.pis; valid = true; }
+      else { tipo = 'CPF/PIS'; valid = false; }
+    } else if (digits.length === 10) {
+      tipo = labels.phone; valid = isValidPhone(doc);
+    } else if (digits.length === 8) {
+      tipo = labels.cep; valid = isValidCEP(doc);
+    } else {
+      console.error(c('red', `Não foi possível detectar o tipo de "${doc}" (${digits.length} dígitos). Use --type <cpf|cnpj|pis|cep|phone>.`));
+      process.exit(1);
+    }
+
     console.log(`${tipo} ${c('bold', doc)} → ${valid ? c('green', '✓ válido') : c('red', '✗ inválido')}`);
     process.exit(valid ? 0 : 1);
   }

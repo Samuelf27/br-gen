@@ -7,7 +7,7 @@ CLI para gerar <b>dados brasileiros válidos</b> (CPF, CNPJ, PIS, telefone, pess
 <p align="center">
   <img src="https://img.shields.io/badge/Node.js-339933?style=flat&logo=nodedotjs&logoColor=white"/>
   <img src="https://img.shields.io/badge/CLI-000000?style=flat&logo=gnubash&logoColor=white"/>
-  <img src="https://img.shields.io/badge/tests-5%20passing-34d399?style=flat"/>
+  <img src="https://img.shields.io/badge/tests-20%20passing-34d399?style=flat"/>
   <img src="https://img.shields.io/badge/dependencies-0-blue?style=flat"/>
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat"/>
 </p>
@@ -39,13 +39,31 @@ br-gen phone          # gera um celular com DDD válido
 br-gen cep            # gera um CEP
 br-gen person         # gera uma pessoa fake completa
 br-gen person --json  # ...em JSON
-br-gen validate 529.982.247-25   # valida CPF/CNPJ
+br-gen validate 529.982.247-25         # detecta o tipo e valida
+br-gen validate 123.45678.90-0 --type pis   # força o tipo
 ```
+
+### `validate` — detecção de tipo
+
+O comando `validate` detecta o tipo pelo número de dígitos:
+
+| Dígitos | Tipo detectado |
+|---|---|
+| 14 | CNPJ |
+| 11 | CPF **ou** PIS (testa os dois e informa qual casa) |
+| 10 | Telefone |
+| 8 | CEP |
+
+Como CPF, PIS e telefone celular têm 11 dígitos, casos ambíguos podem ser
+resolvidos com `--type`. Por exemplo, um celular de 11 dígitos é validado com
+`br-gen validate 11987654321 --type phone`. Tipos aceitos: `cpf`, `cnpj`,
+`pis`, `cep`, `phone`.
 
 ### Opções
 | Flag | Descrição |
 |---|---|
 | `-n, --count <N>` | Quantidade a gerar (1–1000) |
+| `--type <tipo>` | Força o tipo no `validate` (`cpf`, `cnpj`, `pis`, `cep`, `phone`) |
 | `--raw` | Sem máscara (só dígitos) |
 | `--json` | Saída em JSON |
 | `-h, --help` | Ajuda |
