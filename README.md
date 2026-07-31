@@ -7,7 +7,7 @@ CLI para gerar <b>dados brasileiros válidos</b> (CPF, CNPJ, PIS, telefone, pess
 <p align="center">
   <img src="https://img.shields.io/badge/Node.js-339933?style=flat&logo=nodedotjs&logoColor=white"/>
   <img src="https://img.shields.io/badge/CLI-000000?style=flat&logo=gnubash&logoColor=white"/>
-  <img src="https://img.shields.io/badge/tests-20%20passing-34d399?style=flat"/>
+  <a href="https://github.com/Samuelf27/br-gen/actions/workflows/ci.yml"><img src="https://github.com/Samuelf27/br-gen/actions/workflows/ci.yml/badge.svg" alt="CI"/></a>
   <img src="https://img.shields.io/badge/dependencies-0-blue?style=flat"/>
   <img src="https://img.shields.io/badge/license-MIT-green?style=flat"/>
 </p>
