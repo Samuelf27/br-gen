@@ -1,5 +1,5 @@
 {
-  "name": "@samuelf27/br-gen",
+  "name": "@eusamuelf/br-gen",
   "version": "1.0.0",
   "description": "CLI para gerar dados brasileiros válidos (CPF, CNPJ, PIS, telefone, pessoa fake) para testes e seeds. Zero dependências.",
   "type": "module",

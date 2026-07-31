@@ -22,10 +22,10 @@ Quem trabalha com sistemas brasileiros vive precisando de **CPF, CNPJ e PIS vál
 
 ```bash
 # sem instalar (via npx)
-npx @samuelf27/br-gen cpf
+npx @eusamuelf/br-gen cpf
 
 # ou instale globalmente
-npm install -g @samuelf27/br-gen
+npm install -g @eusamuelf/br-gen
 br-gen person
 ```
 
