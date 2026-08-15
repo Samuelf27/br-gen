@@ -88,6 +88,21 @@ Natália Costa
 npm test   # testes com o runner nativo do Node
 ```
 
+## 🧪 Testes
+
+**20 testes** com o runner nativo do Node (`node --test`), sem dependência externa.
+
+Os geradores são verificados por **teste de propriedade**: em vez de conferir alguns casos, a suíte gera **5.000 CPFs e 5.000 CNPJs** e exige que todos passem no validador correspondente. Também cobre as bases degeneradas — `000000000` e `00000000` — em que o gerador precisa re-rolar em vez de emitir um documento de dígitos repetidos.
+
+| Arquivo | Cobre |
+|---|---|
+| `test/generators.test.js` | Propriedade dos geradores (5.000 iterações cada), `--raw`, máscara e `generatePerson` |
+| `test/cli.test.js` | Detecção de tipo por tamanho, desambiguação entre CPF/PIS/celular (todos com 11 dígitos), `--type` forçado e códigos de saída |
+
+```bash
+npm test
+```
+
 ## 📄 Licença
 
 [MIT](LICENSE) © Samuel Ferreira
