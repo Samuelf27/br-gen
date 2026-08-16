@@ -1,9 +1,15 @@
 name: Publish to npm
 
 # Publica no npm ao criar uma tag (ex.: v1.0.0). Requer o secret NPM_TOKEN.
+# Disparo MANUAL, nao mais por tag.
+#
+# A conta npm exige token granular com bypass de 2FA para publicar, e enquanto
+# isso nao estiver configurado o job falha com 403 — sujando de vermelho toda
+# tag criada para uma Release do GitHub (que nao tem relacao com o npm).
+#
+# Para publicar: aba Actions -> "Publish to npm" -> Run workflow.
 on:
-  push:
-    tags: ['v*']
+  workflow_dispatch:
 
 jobs:
   publish:
