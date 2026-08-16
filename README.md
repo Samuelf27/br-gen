@@ -20,12 +20,20 @@ Quem trabalha com sistemas brasileiros vive precisando de **CPF, CNPJ e PIS vál
 
 ## 🚀 Uso rápido
 
-```bash
-# sem instalar (via npx)
-npx @eusamuelf/br-gen cpf
+> **Ainda não publicado no npm.** Por enquanto, rode a partir do repositório:
 
-# ou instale globalmente
-npm install -g @eusamuelf/br-gen
+```bash
+git clone https://github.com/Samuelf27/br-gen.git
+cd br-gen
+
+node bin/br-gen.js cpf
+node bin/br-gen.js person
+```
+
+Ou instale direto do GitHub, com o comando `br-gen` disponível no PATH:
+
+```bash
+npm install -g github:Samuelf27/br-gen
 br-gen person
 ```
 
